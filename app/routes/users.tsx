@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { memo, useCallback, useDeferredValue, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Avatar,
@@ -144,11 +144,153 @@ function EmployeeTableSkeleton() {
   );
 }
 
-export default function Users() {
+const PageHeader = memo(function PageHeader({
+  isLoading,
+  onRefetch,
+}: {
+  isLoading: boolean;
+  onRefetch: () => void;
+}) {
   const { t } = useTranslation();
-  const { employees, filters, isLoading, error, refetch } = useEmployees();
+
+  return (
+    <Stack
+      direction={{ minimum: 'column', tablet: 'row' }}
+      gap="md"
+      align={{ minimum: 'stretch', tablet: 'center' }}
+      justify="space-between"
+      width="100%"
+    >
+      <Stack direction="column" gap="xs" width="100%">
+        <Typography variant="headline" size="lg" as="h1">
+          {t('employees.header.title')}
+        </Typography>
+        <Typography color="on-surface-variant" as="p">
+          {t('employees.header.description')}
+        </Typography>
+      </Stack>
+      <Button
+        variant="outlined"
+        icon="refresh"
+        onClick={onRefetch}
+        disabled={isLoading}
+      >
+        {t('employees.actions.refresh')}
+      </Button>
+    </Stack>
+  );
+});
+
+const EmployeeSearchField = memo(function EmployeeSearchField({
+  search,
+  onSearchChange,
+}: {
+  search: string;
+  onSearchChange: (value: string) => void;
+}) {
+  const { t } = useTranslation();
+
+  return (
+    <TextField
+      label={t('employees.filters.search')}
+      placeholder={t('employees.filters.searchPlaceholder')}
+      value={search}
+      onChange={(event) => onSearchChange(event.target.value)}
+      clearable
+      icon="search"
+      density="-2"
+    />
+  );
+});
+
+const EmployeeFilterChips = memo(function EmployeeFilterChips({
+  activeFilters,
+  filters,
+  onFilterToggle,
+}: {
+  activeFilters: ActiveFilters;
+  filters: EmployeeFilters | null;
+  onFilterToggle: (filterKey: FilterKey, value: string) => void;
+}) {
+  const { t } = useTranslation();
+
+  return (
+    <Stack direction="row" gap="sm" wrap="wrap">
+      {filterKeys.map((filterKey) => {
+        const selectedValue = activeFilters[filterKey];
+        const selectedLabel = getFilterOptionLabel(
+          filters,
+          filterKey,
+          selectedValue,
+        );
+        const items =
+          filters?.[filterKey].map((option) => ({
+            id: option.value,
+            label:
+              filterKey === 'status'
+                ? t(
+                    statusConfig[option.value as EmployeeStatus]?.labelKey ??
+                      option.label,
+                  )
+                : option.label,
+          })) ?? [];
+
+        return (
+          <PopUpMenu
+            key={filterKey}
+            items={items}
+            selectedItem={selectedValue}
+            selectable="single"
+            placement="bottom-left"
+            onItemClick={(item) => onFilterToggle(filterKey, item.id)}
+          >
+            <Chip
+              type="filter"
+              label={
+                selectedLabel
+                  ? t('employees.filters.activeLabel', {
+                      filter: t(`employees.filters.${filterKey}`),
+                      value:
+                        filterKey === 'status'
+                          ? t(
+                              statusConfig[selectedValue as EmployeeStatus]
+                                ?.labelKey ?? selectedLabel,
+                            )
+                          : selectedLabel,
+                    })
+                  : t(`employees.filters.${filterKey}`)
+              }
+              variant={selectedValue ? 'primary' : 'secondary'}
+              disabled={!filters}
+            />
+          </PopUpMenu>
+        );
+      })}
+    </Stack>
+  );
+});
+
+function EmployeeTableSection({
+  employees,
+  filters,
+}: {
+  employees: Employee[];
+  filters: EmployeeFilters | null;
+}) {
+  const { t } = useTranslation();
   const [search, setSearch] = useState('');
+  const deferredSearch = useDeferredValue(search);
   const [activeFilters, setActiveFilters] = useState<ActiveFilters>({});
+
+  const handleFilterToggle = useCallback(
+    (filterKey: FilterKey, value: string) => {
+      setActiveFilters((currentFilters) => ({
+        ...currentFilters,
+        [filterKey]: currentFilters[filterKey] === value ? undefined : value,
+      }));
+    },
+    [],
+  );
 
   const tableColumns = useMemo(
     () =>
@@ -184,7 +326,7 @@ export default function Users() {
   );
 
   const filteredEmployees = useMemo(() => {
-    const normalizedSearch = search.trim().toLocaleLowerCase();
+    const normalizedSearch = deferredSearch.trim().toLocaleLowerCase();
 
     return employees.filter((employee) => {
       const matchesSearch =
@@ -202,7 +344,7 @@ export default function Users() {
         ),
       );
     });
-  }, [activeFilters, employees, filters, search]);
+  }, [activeFilters, deferredSearch, employees, filters]);
 
   const filterControls = useMemo(
     () => (
@@ -213,78 +355,15 @@ export default function Users() {
         wrap="wrap"
         width="100%"
       >
-        <TextField
-          label={t('employees.filters.search')}
-          placeholder={t('employees.filters.searchPlaceholder')}
-          value={search}
-          onChange={(event) => setSearch(event.target.value)}
-          clearable
-          icon="search"
-          density="-2"
+        <EmployeeSearchField search={search} onSearchChange={setSearch} />
+        <EmployeeFilterChips
+          activeFilters={activeFilters}
+          filters={filters}
+          onFilterToggle={handleFilterToggle}
         />
-        <Stack direction="row" gap="sm" wrap="wrap">
-          {filterKeys.map((filterKey) => {
-            const selectedValue = activeFilters[filterKey];
-            const selectedLabel = getFilterOptionLabel(
-              filters,
-              filterKey,
-              selectedValue,
-            );
-            const items =
-              filters?.[filterKey].map((option) => ({
-                id: option.value,
-                label:
-                  filterKey === 'status'
-                    ? t(
-                        statusConfig[option.value as EmployeeStatus]
-                          ?.labelKey ?? option.label,
-                      )
-                    : option.label,
-              })) ?? [];
-
-            return (
-              <PopUpMenu
-                key={filterKey}
-                items={items}
-                selectedItem={selectedValue}
-                selectable="single"
-                placement="bottom-left"
-                onItemClick={(item) => {
-                  setActiveFilters((currentFilters) => ({
-                    ...currentFilters,
-                    [filterKey]:
-                      currentFilters[filterKey] === item.id
-                        ? undefined
-                        : item.id,
-                  }));
-                }}
-              >
-                <Chip
-                  type="filter"
-                  label={
-                    selectedLabel
-                      ? t('employees.filters.activeLabel', {
-                          filter: t(`employees.filters.${filterKey}`),
-                          value:
-                            filterKey === 'status'
-                              ? t(
-                                  statusConfig[selectedValue as EmployeeStatus]
-                                    ?.labelKey ?? selectedLabel,
-                                )
-                              : selectedLabel,
-                        })
-                      : t(`employees.filters.${filterKey}`)
-                  }
-                  variant={selectedValue ? 'primary' : 'secondary'}
-                  disabled={!filters}
-                />
-              </PopUpMenu>
-            );
-          })}
-        </Stack>
       </Stack>
     ),
-    [activeFilters, filters, search, t],
+    [activeFilters, filters, handleFilterToggle, search],
   );
 
   const tableRows = useMemo<EmployeeTableRow[]>(
@@ -336,36 +415,31 @@ export default function Users() {
   );
 
   return (
+    <Table
+      title={t('employees.table.title', {
+        count: filteredEmployees.length,
+      })}
+      columns={tableColumns}
+      data={tableRows}
+      filters={filterControls}
+      emptyState={t('employees.empty')}
+      headerBackgroundColor
+    />
+  );
+}
+
+export default function Users() {
+  const { t } = useTranslation();
+  const { employees, filters, isLoading, error, refetch } = useEmployees();
+
+  return (
     <div className="h-full overflow-auto">
       <Stack
         direction="column"
         gap="lg"
         padding={{ minimum: 'sm', tablet: 'lg' }}
       >
-        <Stack
-          direction={{ minimum: 'column', tablet: 'row' }}
-          gap="md"
-          align={{ minimum: 'stretch', tablet: 'center' }}
-          justify="space-between"
-          width="100%"
-        >
-          <Stack direction="column" gap="xs" width="100%">
-            <Typography variant="headline" size="lg" as="h1">
-              {t('employees.header.title')}
-            </Typography>
-            <Typography color="on-surface-variant" as="p">
-              {t('employees.header.description')}
-            </Typography>
-          </Stack>
-          <Button
-            variant="outlined"
-            icon="refresh"
-            onClick={refetch}
-            disabled={isLoading}
-          >
-            {t('employees.actions.refresh')}
-          </Button>
-        </Stack>
+        <PageHeader isLoading={isLoading} onRefetch={refetch} />
 
         {error ? (
           <InfoBox
@@ -378,16 +452,7 @@ export default function Users() {
         {isLoading ? (
           <EmployeeTableSkeleton />
         ) : (
-          <Table
-            title={t('employees.table.title', {
-              count: filteredEmployees.length,
-            })}
-            columns={tableColumns}
-            data={tableRows}
-            filters={filterControls}
-            emptyState={t('employees.empty')}
-            headerBackgroundColor
-          />
+          <EmployeeTableSection employees={employees} filters={filters} />
         )}
       </Stack>
     </div>
