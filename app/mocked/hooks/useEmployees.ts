@@ -1,5 +1,9 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { EmployeeService } from '../services/employeeService';
+import { useEffect } from 'react';
+import {
+  EmployeeService,
+  type EmployeeDataComposite,
+} from '../services/employeeService';
+import { useAsync } from './useAsync'; // import naszego helpera
 import type { Employee, EmployeeFilters } from '../types/employee';
 
 type UseEmployeesResult = {
@@ -11,46 +15,21 @@ type UseEmployeesResult = {
 };
 
 export function useEmployees(): UseEmployeesResult {
-  const [employees, setEmployees] = useState<Employee[]>([]);
-  const [filters, setFilters] = useState<EmployeeFilters | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
-  const requestIdRef = useRef(0);
-
-  const refetch = useCallback(async () => {
-    const requestId = requestIdRef.current + 1;
-    requestIdRef.current = requestId;
-
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      // Wywołanie zewnętrznego serwisu
-      const { employees, filters } =
-        await EmployeeService.getEmployeesWithFilters();
-
-      if (requestIdRef.current !== requestId) return;
-
-      setEmployees(employees);
-      setFilters(filters);
-    } catch (caughtError: unknown) {
-      if (requestIdRef.current !== requestId) return;
-
-      setError(
-        caughtError instanceof Error
-          ? caughtError
-          : new Error('Failed to fetch employees data'),
-      );
-    } finally {
-      if (requestIdRef.current !== requestId) return;
-
-      setIsLoading(false);
-    }
-  }, []);
+  // Przekazujemy funkcję z serwisu do naszego uniwersalnego hooka
+  const { data, isLoading, error, execute } = useAsync<EmployeeDataComposite>(
+    EmployeeService.getEmployeesWithFilters,
+  );
 
   useEffect(() => {
-    refetch();
-  }, [refetch]);
+    execute();
+  }, [execute]);
 
-  return { employees, filters, isLoading, error, refetch };
+  return {
+    // Jeśli dane jeszcze nie przyszły, zwracamy pustą tablicę dla zachowania wstecznej kompatybilności tabeli/listy
+    employees: data?.employees ?? [],
+    filters: data?.filters ?? null,
+    isLoading,
+    error,
+    refetch: execute,
+  };
 }
