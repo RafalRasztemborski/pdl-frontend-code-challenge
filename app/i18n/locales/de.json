@@ -2,6 +2,7 @@
   "nav": {
     "home": "Startseite",
     "users": "Benutzer",
+    "employees": "Mitarbeiter",
     "language": "Sprache",
     "lightMode": "Light Mode",
     "darkMode": "Dark Mode"
@@ -67,5 +68,38 @@
     "progress": {
       "value": "{{value}}%"
     }
+  },
+  "employees": {
+    "header": {
+      "title": "Mitarbeiter",
+      "description": "Pruefen Sie Mitarbeiterdaten, Ueberlassungszeiträume, Kontaktdaten und aktuelle Status."
+    },
+    "table": {
+      "name": "Name",
+      "vorname": "Vorname",
+      "beruf": "Beruf",
+      "telefon": "Telefonnummer",
+      "plz": "Postleitzahl",
+      "eintritt": "Eintrittsdatum",
+      "ueberlassen": "Ueberlassen bis",
+      "status": "Status",
+      "actions": "Aktionen"
+    },
+    "status": {
+      "mitarbeiter": "Mitarbeiter",
+      "bewerber": "Bewerber",
+      "ehemalig": "Ehemaliger Mitarbeiter",
+      "zukuenftig": "Zukuenftiger Mitarbeiter",
+      "bewerberCockpit": "Bewerber-Cockpit"
+    },
+    "actions": {
+      "refresh": "Aktualisieren",
+      "view": "Details anzeigen",
+      "edit": "Bearbeiten",
+      "delete": "Loeschen",
+      "openMenu": "Aktionen fuer {{name}} oeffnen"
+    },
+    "empty": "Keine Mitarbeiter gefunden.",
+    "error": "Mitarbeiterdaten konnten nicht geladen werden."
   }
 }

@@ -166,7 +166,7 @@ export default function Home() {
               variant="filled"
               icon="users"
               linkComponent={Link}
-              to="/users"
+              to="/employees"
             >
               {t("dashboard.actions.employees")}
             </Button>

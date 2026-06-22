@@ -2,6 +2,7 @@
   "nav": {
     "home": "Home",
     "users": "Users",
+    "employees": "Employees",
     "language": "Language",
     "lightMode": "Light Mode",
     "darkMode": "Dark Mode"
@@ -67,5 +68,38 @@
     "progress": {
       "value": "{{value}}%"
     }
+  },
+  "employees": {
+    "header": {
+      "title": "Employees",
+      "description": "Review employee records, assignment dates, contact details, and current status."
+    },
+    "table": {
+      "name": "Name",
+      "vorname": "First name",
+      "beruf": "Profession",
+      "telefon": "Phone number",
+      "plz": "Postcode",
+      "eintritt": "Entry date",
+      "ueberlassen": "Assigned until",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "status": {
+      "mitarbeiter": "Employee",
+      "bewerber": "Applicant",
+      "ehemalig": "Former employee",
+      "zukuenftig": "Future employee",
+      "bewerberCockpit": "Applicant cockpit"
+    },
+    "actions": {
+      "refresh": "Refresh",
+      "view": "View details",
+      "edit": "Edit",
+      "delete": "Delete",
+      "openMenu": "Open actions for {{name}}"
+    },
+    "empty": "No employees found.",
+    "error": "Employee data could not be loaded."
   }
 }
