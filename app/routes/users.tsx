@@ -1,15 +1,17 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Avatar,
   Button,
   Card,
+  Chip,
   InfoBox,
   PopUpMenu,
   Skeleton,
   Stack,
   Table,
   Tag,
+  TextField,
   Typography,
   type PopUpMenuItem,
   type TableColumnProps,
@@ -17,7 +19,12 @@ import {
 } from '@zvoove/unity-ui';
 
 import { useEmployees } from '../mocked/hooks/useEmployees';
-import type { Employee, EmployeeStatus } from '../mocked/types/employee';
+import type {
+  Employee,
+  EmployeeFilterOption,
+  EmployeeFilters,
+  EmployeeStatus,
+} from '../mocked/types/employee';
 
 const columns = [
   { id: 'name', label: 'employees.table.name', minWidth: '220px' },
@@ -42,6 +49,16 @@ const columns = [
 
 type EmployeeTableColumns = typeof columns;
 type EmployeeTableRow = TableRowData<EmployeeTableColumns>;
+type FilterKey = keyof EmployeeFilters;
+type ActiveFilters = Partial<Record<FilterKey, string>>;
+
+const filterKeys = [
+  'beruf',
+  'plz',
+  'eintritt',
+  'ueberlassen',
+  'status',
+] as const satisfies readonly FilterKey[];
 
 const statusConfig: Record<
   EmployeeStatus,
@@ -76,6 +93,37 @@ function getEmployeeName(employee: Employee): string {
   return `${employee.vorname} ${employee.nachname}`;
 }
 
+function getFilterOptionLabel(
+  filters: EmployeeFilters | null,
+  filterKey: FilterKey,
+  value: string | undefined,
+): string | null {
+  if (!value) return null;
+
+  return (
+    filters?.[filterKey].find((option) => option.value === value)?.label ?? null
+  );
+}
+
+function matchesFilterOption(
+  employeeValue: string,
+  selectedValue: string | undefined,
+  options: EmployeeFilterOption[] | undefined,
+): boolean {
+  if (!selectedValue) return true;
+
+  const option = options?.find((item) => item.value === selectedValue);
+  const normalizedEmployeeValue = employeeValue.toLocaleLowerCase();
+  const normalizedSelectedValue = selectedValue.toLocaleLowerCase();
+  const normalizedOptionLabel = option?.label.toLocaleLowerCase();
+
+  return (
+    normalizedEmployeeValue === normalizedSelectedValue ||
+    normalizedEmployeeValue.includes(normalizedSelectedValue) ||
+    normalizedEmployeeValue === normalizedOptionLabel
+  );
+}
+
 function EmployeeTableSkeleton() {
   return (
     <Card variant="outlined" padding="md">
@@ -96,9 +144,11 @@ function EmployeeTableSkeleton() {
   );
 }
 
-export default function Employees() {
+export default function Users() {
   const { t } = useTranslation();
-  const { employees, isLoading, error, refetch } = useEmployees();
+  const { employees, filters, isLoading, error, refetch } = useEmployees();
+  const [search, setSearch] = useState('');
+  const [activeFilters, setActiveFilters] = useState<ActiveFilters>({});
 
   const tableColumns = useMemo(
     () =>
@@ -133,9 +183,113 @@ export default function Employees() {
     [t],
   );
 
+  const filteredEmployees = useMemo(() => {
+    const normalizedSearch = search.trim().toLocaleLowerCase();
+
+    return employees.filter((employee) => {
+      const matchesSearch =
+        normalizedSearch.length === 0 ||
+        employee.nachname.toLocaleLowerCase().includes(normalizedSearch) ||
+        employee.vorname.toLocaleLowerCase().includes(normalizedSearch);
+
+      if (!matchesSearch) return false;
+
+      return filterKeys.every((filterKey) =>
+        matchesFilterOption(
+          employee[filterKey],
+          activeFilters[filterKey],
+          filters?.[filterKey],
+        ),
+      );
+    });
+  }, [activeFilters, employees, filters, search]);
+
+  const filterControls = useMemo(
+    () => (
+      <Stack
+        direction={{ minimum: 'column', tablet: 'row' }}
+        gap="sm"
+        align={{ minimum: 'stretch', tablet: 'center' }}
+        wrap="wrap"
+        width="100%"
+      >
+        <TextField
+          label={t('employees.filters.search')}
+          placeholder={t('employees.filters.searchPlaceholder')}
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+          clearable
+          icon="search"
+          density="-2"
+        />
+        <Stack direction="row" gap="sm" wrap="wrap">
+          {filterKeys.map((filterKey) => {
+            const selectedValue = activeFilters[filterKey];
+            const selectedLabel = getFilterOptionLabel(
+              filters,
+              filterKey,
+              selectedValue,
+            );
+            const items =
+              filters?.[filterKey].map((option) => ({
+                id: option.value,
+                label:
+                  filterKey === 'status'
+                    ? t(
+                        statusConfig[option.value as EmployeeStatus]
+                          ?.labelKey ?? option.label,
+                      )
+                    : option.label,
+              })) ?? [];
+
+            return (
+              <PopUpMenu
+                key={filterKey}
+                items={items}
+                selectedItem={selectedValue}
+                selectable="single"
+                placement="bottom-left"
+                onItemClick={(item) => {
+                  setActiveFilters((currentFilters) => ({
+                    ...currentFilters,
+                    [filterKey]:
+                      currentFilters[filterKey] === item.id
+                        ? undefined
+                        : item.id,
+                  }));
+                }}
+              >
+                <Chip
+                  type="filter"
+                  label={
+                    selectedLabel
+                      ? t('employees.filters.activeLabel', {
+                          filter: t(`employees.filters.${filterKey}`),
+                          value:
+                            filterKey === 'status'
+                              ? t(
+                                  statusConfig[selectedValue as EmployeeStatus]
+                                    ?.labelKey ?? selectedLabel,
+                                )
+                              : selectedLabel,
+                        })
+                      : t(`employees.filters.${filterKey}`)
+                  }
+                  variant={selectedValue ? 'primary' : 'secondary'}
+                  disabled={!filters}
+                />
+              </PopUpMenu>
+            );
+          })}
+        </Stack>
+      </Stack>
+    ),
+    [activeFilters, filters, search, t],
+  );
+
   const tableRows = useMemo<EmployeeTableRow[]>(
     () =>
-      employees.map((employee) => {
+      filteredEmployees.map((employee) => {
         const status = statusConfig[employee.status];
         const employeeName = getEmployeeName(employee);
 
@@ -178,7 +332,7 @@ export default function Employees() {
           ),
         };
       }),
-    [employees, rowActions, t],
+    [filteredEmployees, rowActions, t],
   );
 
   return (
@@ -225,8 +379,12 @@ export default function Employees() {
           <EmployeeTableSkeleton />
         ) : (
           <Table
+            title={t('employees.table.title', {
+              count: filteredEmployees.length,
+            })}
             columns={tableColumns}
             data={tableRows}
+            filters={filterControls}
             emptyState={t('employees.empty')}
             headerBackgroundColor
           />

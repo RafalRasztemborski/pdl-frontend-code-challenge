@@ -75,6 +75,7 @@
       "description": "Pruefen Sie Mitarbeiterdaten, Ueberlassungszeiträume, Kontaktdaten und aktuelle Status."
     },
     "table": {
+      "title": "Alle Mitarbeitenden ({{count}})",
       "name": "Name",
       "vorname": "Vorname",
       "beruf": "Beruf",
@@ -98,6 +99,16 @@
       "edit": "Bearbeiten",
       "delete": "Loeschen",
       "openMenu": "Aktionen fuer {{name}} oeffnen"
+    },
+    "filters": {
+      "search": "Suche",
+      "searchPlaceholder": "Nach Vor- oder Nachname suchen",
+      "activeLabel": "{{filter}}: {{value}}",
+      "beruf": "Beruf",
+      "plz": "Postleitzahl",
+      "eintritt": "Eintrittsdatum",
+      "ueberlassen": "Ueberlassen bis",
+      "status": "Status"
     },
     "empty": "Keine Mitarbeiter gefunden.",
     "error": "Mitarbeiterdaten konnten nicht geladen werden."

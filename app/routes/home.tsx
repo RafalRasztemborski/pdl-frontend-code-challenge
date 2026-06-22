@@ -1,5 +1,5 @@
-import { Link } from "react-router";
-import { useTranslation } from "react-i18next";
+import { Link } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import {
   Avatar,
   Button,
@@ -14,19 +14,19 @@ import {
   Tag,
   Typography,
   type ListItem,
-} from "@zvoove/unity-ui";
+} from '@zvoove/unity-ui';
 
-import { useDashboard } from "../mocked/hooks/useDashboard";
+import { useDashboard } from '../mocked/hooks/useDashboard';
 import type {
   DashboardActivity,
   DashboardUpcomingEvent,
-} from "../mocked/types/dashboard";
+} from '../mocked/types/dashboard';
 
 function getInitials(name: string): string {
   return name
-    .split(" ")
+    .split(' ')
     .map((part) => part[0])
-    .join("")
+    .join('')
     .slice(0, 2)
     .toUpperCase();
 }
@@ -53,7 +53,7 @@ function DashboardSkeleton() {
           </Card>
         ))}
       </Grid>
-      <Grid columns={{ minimum: 1, laptop: "1fr 1fr" }} gap="md" width="100%">
+      <Grid columns={{ minimum: 1, laptop: '1fr 1fr' }} gap="md" width="100%">
         {Array.from({ length: 3 }).map((_, index) => (
           <Card key={index} variant="outlined" padding="md">
             <Stack direction="column" gap="md">
@@ -136,21 +136,21 @@ export default function Home() {
       <Stack
         direction="column"
         gap="lg"
-        padding={{ minimum: "sm", tablet: "lg" }}
+        padding={{ minimum: 'sm', tablet: 'lg' }}
       >
         <Stack
-          direction={{ minimum: "column", tablet: "row" }}
+          direction={{ minimum: 'column', tablet: 'row' }}
           gap="md"
-          align={{ minimum: "stretch", tablet: "center" }}
+          align={{ minimum: 'stretch', tablet: 'center' }}
           justify="space-between"
           width="100%"
         >
           <Stack direction="column" gap="xs" width="100%">
             <Typography variant="headline" size="lg" as="h1">
-              {t("dashboard.header.title")}
+              {t('dashboard.header.title')}
             </Typography>
             <Typography color="on-surface-variant" as="p">
-              {t("dashboard.header.description")}
+              {t('dashboard.header.description')}
             </Typography>
           </Stack>
           <Stack direction="row" gap="sm" justify="flex-end">
@@ -160,7 +160,7 @@ export default function Home() {
               onClick={refetch}
               disabled={isLoading}
             >
-              {t("dashboard.actions.refresh")}
+              {t('dashboard.actions.refresh')}
             </Button>
             <Button<typeof Link>
               variant="filled"
@@ -168,14 +168,14 @@ export default function Home() {
               linkComponent={Link}
               to="/employees"
             >
-              {t("dashboard.actions.employees")}
+              {t('dashboard.actions.employees')}
             </Button>
           </Stack>
         </Stack>
 
         {error ? (
           <InfoBox
-            message={t("dashboard.error")}
+            message={t('dashboard.error')}
             variant="error"
             icon="warning"
           />
@@ -225,7 +225,7 @@ export default function Home() {
             </Grid>
 
             <Grid
-              columns={{ minimum: 1, laptop: "1fr 1fr" }}
+              columns={{ minimum: 1, laptop: '1fr 1fr' }}
               gap="md"
               width="100%"
             >
@@ -235,7 +235,7 @@ export default function Home() {
                 header={
                   <Stack padding="md">
                     <Typography variant="title" size="md" as="h2">
-                      {t("dashboard.sections.activity")}
+                      {t('dashboard.sections.activity')}
                     </Typography>
                   </Stack>
                 }
@@ -252,7 +252,7 @@ export default function Home() {
                 header={
                   <Stack padding="md">
                     <Typography variant="title" size="md" as="h2">
-                      {t("dashboard.sections.upcoming")}
+                      {t('dashboard.sections.upcoming')}
                     </Typography>
                   </Stack>
                 }
@@ -270,7 +270,7 @@ export default function Home() {
                   header={
                     <Stack padding="md">
                       <Typography variant="title" size="md" as="h2">
-                        {t("dashboard.sections.onboarding")}
+                        {t('dashboard.sections.onboarding')}
                       </Typography>
                     </Stack>
                   }
@@ -285,7 +285,7 @@ export default function Home() {
                         >
                           <Typography as="span">{t(item.labelKey)}</Typography>
                           <Typography color="on-surface-variant" as="span">
-                            {t("dashboard.progress.value", {
+                            {t('dashboard.progress.value', {
                               value: item.value,
                             })}
                           </Typography>

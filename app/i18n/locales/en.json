@@ -75,6 +75,7 @@
       "description": "Review employee records, assignment dates, contact details, and current status."
     },
     "table": {
+      "title": "All employees ({{count}})",
       "name": "Name",
       "vorname": "First name",
       "beruf": "Profession",
@@ -98,6 +99,16 @@
       "edit": "Edit",
       "delete": "Delete",
       "openMenu": "Open actions for {{name}}"
+    },
+    "filters": {
+      "search": "Search",
+      "searchPlaceholder": "Search by first or last name",
+      "activeLabel": "{{filter}}: {{value}}",
+      "beruf": "Profession",
+      "plz": "Postcode",
+      "eintritt": "Entry date",
+      "ueberlassen": "Assigned until",
+      "status": "Status"
     },
     "empty": "No employees found.",
     "error": "Employee data could not be loaded."
