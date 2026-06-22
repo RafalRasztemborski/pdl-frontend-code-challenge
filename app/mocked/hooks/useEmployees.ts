@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { fetchEmployeeFilters, fetchEmployees } from '../api/employees';
+import { EmployeeService } from '../services/employeeService';
 import type { Employee, EmployeeFilters } from '../types/employee';
 
 type UseEmployeesResult = {
@@ -17,51 +17,40 @@ export function useEmployees(): UseEmployeesResult {
   const [error, setError] = useState<Error | null>(null);
   const requestIdRef = useRef(0);
 
-  const refetch = useCallback(() => {
+  const refetch = useCallback(async () => {
     const requestId = requestIdRef.current + 1;
     requestIdRef.current = requestId;
 
     setIsLoading(true);
     setError(null);
 
-    Promise.all([fetchEmployees(), fetchEmployeeFilters()])
-      .then(([employeesData, filtersData]) => {
-        if (requestIdRef.current !== requestId) {
-          return;
-        }
+    try {
+      // Wywołanie zewnętrznego serwisu
+      const { employees, filters } =
+        await EmployeeService.getEmployeesWithFilters();
 
-        setEmployees(employeesData);
-        setFilters(filtersData);
-      })
-      .catch((caughtError: unknown) => {
-        if (requestIdRef.current !== requestId) {
-          return;
-        }
+      if (requestIdRef.current !== requestId) return;
 
-        setError(
-          caughtError instanceof Error
-            ? caughtError
-            : new Error('Failed to fetch employees data'),
-        );
-      })
-      .finally(() => {
-        if (requestIdRef.current !== requestId) {
-          return;
-        }
+      setEmployees(employees);
+      setFilters(filters);
+    } catch (caughtError: unknown) {
+      if (requestIdRef.current !== requestId) return;
 
-        setIsLoading(false);
-      });
+      setError(
+        caughtError instanceof Error
+          ? caughtError
+          : new Error('Failed to fetch employees data'),
+      );
+    } finally {
+      if (requestIdRef.current !== requestId) return;
+
+      setIsLoading(false);
+    }
   }, []);
 
   useEffect(() => {
     refetch();
   }, [refetch]);
 
-  return {
-    employees,
-    filters,
-    isLoading,
-    error,
-    refetch,
-  };
+  return { employees, filters, isLoading, error, refetch };
 }

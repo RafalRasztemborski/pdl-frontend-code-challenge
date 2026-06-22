@@ -13,5 +13,59 @@
   "user": {
     "guest": "Gast",
     "subtitle": "Code Challenge"
+  },
+  "dashboard": {
+    "header": {
+      "title": "HR-Uebersicht",
+      "description": "Behalten Sie Personalveraenderungen, Recruiting und Onboarding im Blick."
+    },
+    "actions": {
+      "refresh": "Aktualisieren",
+      "employees": "Mitarbeiter"
+    },
+    "announcement": "Die Freigabe der Gehaltsabrechnung endet bald. Bitte pruefen Sie offene Mitarbeiterdaten rechtzeitig.",
+    "error": "Dashboard-Daten konnten nicht geladen werden.",
+    "sections": {
+      "activity": "Letzte Aktivitaeten",
+      "upcoming": "Anstehende Termine",
+      "onboarding": "Onboarding-Fortschritt"
+    },
+    "kpis": {
+      "employees": "Aktive Mitarbeiter",
+      "positions": "Offene Stellen",
+      "onboarding": "Im Onboarding",
+      "leave": "Urlaubsantraege"
+    },
+    "activity": {
+      "signedContract": "Hat einen Vertrag unterschrieben",
+      "completedOnboarding": "Hat das Onboarding abgeschlossen",
+      "submittedLeave": "Hat einen Urlaubsantrag eingereicht",
+      "newApplication": "Hat eine neue Bewerbung gesendet"
+    },
+    "time": {
+      "hoursAgo": "Vor 2 Stunden",
+      "yesterday": "Gestern",
+      "daysAgo": "Vor 3 Tagen",
+      "hoursAgo2": "Vor 5 Stunden"
+    },
+    "upcoming": {
+      "interview": "Vorstellungsgespraech mit Kandidat",
+      "probationEnd": "Probezeit endet",
+      "teamMeeting": "Teammeeting",
+      "training": "Compliance-Schulung"
+    },
+    "tags": {
+      "recruiting": "Recruiting",
+      "hr": "HR",
+      "team": "Team",
+      "learning": "Learning"
+    },
+    "onboarding": {
+      "documents": "Dokumente",
+      "training": "Training"
+    },
+    "progress": {
+      "value": "{{value}}%"
+    }
   }
 }

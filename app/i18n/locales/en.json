@@ -13,5 +13,59 @@
   "user": {
     "guest": "Guest",
     "subtitle": "Code Challenge"
+  },
+  "dashboard": {
+    "header": {
+      "title": "HR Overview",
+      "description": "Track workforce changes, hiring momentum, and onboarding progress."
+    },
+    "actions": {
+      "refresh": "Refresh",
+      "employees": "Employees"
+    },
+    "announcement": "Payroll approval closes soon. Please review pending employee updates before the deadline.",
+    "error": "Dashboard data could not be loaded.",
+    "sections": {
+      "activity": "Recent activity",
+      "upcoming": "Upcoming events",
+      "onboarding": "Onboarding progress"
+    },
+    "kpis": {
+      "employees": "Active employees",
+      "positions": "Open positions",
+      "onboarding": "In onboarding",
+      "leave": "Leave requests"
+    },
+    "activity": {
+      "signedContract": "Signed a contract",
+      "completedOnboarding": "Completed onboarding",
+      "submittedLeave": "Submitted a leave request",
+      "newApplication": "Sent a new application"
+    },
+    "time": {
+      "hoursAgo": "2 hours ago",
+      "yesterday": "Yesterday",
+      "daysAgo": "3 days ago",
+      "hoursAgo2": "5 hours ago"
+    },
+    "upcoming": {
+      "interview": "Interview with candidate",
+      "probationEnd": "Probation period ends",
+      "teamMeeting": "Team meeting",
+      "training": "Compliance training"
+    },
+    "tags": {
+      "recruiting": "Recruiting",
+      "hr": "HR",
+      "team": "Team",
+      "learning": "Learning"
+    },
+    "onboarding": {
+      "documents": "Documents",
+      "training": "Training"
+    },
+    "progress": {
+      "value": "{{value}}%"
+    }
   }
 }
