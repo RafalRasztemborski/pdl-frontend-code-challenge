@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect } from 'react';
 import { fetchDashboard } from '../api/dashboard';
+import { useAsync } from './useAsync'; // import naszego uniwersalnego helpera
 import type { DashboardData } from '../types/dashboard';
 
 type UseDashboardResult = {
@@ -10,54 +11,18 @@ type UseDashboardResult = {
 };
 
 export function useDashboard(): UseDashboardResult {
-  const [dashboard, setDashboard] = useState<DashboardData | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
-  const requestIdRef = useRef(0);
-
-  const refetch = useCallback(() => {
-    const requestId = requestIdRef.current + 1;
-    requestIdRef.current = requestId;
-
-    setIsLoading(true);
-    setError(null);
-
-    fetchDashboard()
-      .then((data) => {
-        if (requestIdRef.current !== requestId) {
-          return;
-        }
-
-        setDashboard(data);
-      })
-      .catch((caughtError: unknown) => {
-        if (requestIdRef.current !== requestId) {
-          return;
-        }
-
-        setError(
-          caughtError instanceof Error
-            ? caughtError
-            : new Error('Failed to fetch dashboard data'),
-        );
-      })
-      .finally(() => {
-        if (requestIdRef.current !== requestId) {
-          return;
-        }
-
-        setIsLoading(false);
-      });
-  }, []);
+  // Przekazujemy referencję do funkcji fetchDashboard do naszego uniwersalnego hooka
+  const { data, isLoading, error, execute } =
+    useAsync<DashboardData>(fetchDashboard);
 
   useEffect(() => {
-    refetch();
-  }, [refetch]);
+    execute();
+  }, [execute]);
 
   return {
-    dashboard,
+    dashboard: data,
     isLoading,
     error,
-    refetch,
+    refetch: execute,
   };
 }
