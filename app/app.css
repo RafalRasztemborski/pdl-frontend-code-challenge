@@ -1,3 +1,81 @@
 @import "@zvoove/unity-ui/theme.css";
 @import "@zvoove/unity-ui/unity-ui.css";
 @import "tailwindcss";
+
+@keyframes dashboard-fade-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes dashboard-refresh-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.dashboard-stagger-item {
+  animation: dashboard-fade-slide-up 420ms ease-out both;
+}
+
+.dashboard-kpi-card {
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease;
+}
+
+.dashboard-kpi-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 30px rgb(15 23 42 / 12%);
+}
+
+.dashboard-kpi-icon {
+  display: inline-flex;
+  transition: transform 180ms ease;
+}
+
+.dashboard-kpi-card:hover .dashboard-kpi-icon {
+  transform: translateY(-1px) rotate(-5deg) scale(1.04);
+}
+
+.dashboard-refresh-action {
+  display: inline-flex;
+}
+
+.dashboard-refresh-action svg {
+  transition: transform 180ms ease;
+}
+
+.dashboard-refresh-action:hover svg {
+  transform: rotate(180deg);
+}
+
+.dashboard-refresh-action[data-loading='true'] svg {
+  animation: dashboard-refresh-spin 700ms linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dashboard-stagger-item,
+  .dashboard-refresh-action[data-loading='true'] svg {
+    animation: none;
+  }
+
+  .dashboard-kpi-card,
+  .dashboard-kpi-icon,
+  .dashboard-refresh-action svg {
+    transition: none;
+  }
+
+  .dashboard-kpi-card:hover,
+  .dashboard-kpi-card:hover .dashboard-kpi-icon,
+  .dashboard-refresh-action:hover svg {
+    transform: none;
+  }
+}

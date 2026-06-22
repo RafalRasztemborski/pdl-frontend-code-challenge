@@ -1,4 +1,5 @@
 import { Link } from 'react-router';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Avatar,
@@ -19,8 +20,50 @@ import {
 import { useDashboard } from '../mocked/hooks/useDashboard';
 import type {
   DashboardActivity,
+  DashboardKpi,
+  DashboardOnboardingStep,
   DashboardUpcomingEvent,
 } from '../mocked/types/dashboard';
+
+function getPrefersReducedMotion(): boolean {
+  if (typeof window === 'undefined') return true;
+
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
+function useAnimatedNumber(target: number, durationMs = 700): number {
+  const [value, setValue] = useState(() =>
+    getPrefersReducedMotion() ? target : 0,
+  );
+
+  useEffect(() => {
+    if (getPrefersReducedMotion()) {
+      setValue(target);
+      return;
+    }
+
+    let animationFrame = 0;
+    const startedAt = performance.now();
+
+    const tick = (time: number) => {
+      const progress = Math.min((time - startedAt) / durationMs, 1);
+      const easedProgress = 1 - Math.pow(1 - progress, 3);
+
+      setValue(target * easedProgress);
+
+      if (progress < 1) {
+        animationFrame = requestAnimationFrame(tick);
+      }
+    };
+
+    setValue(0);
+    animationFrame = requestAnimationFrame(tick);
+
+    return () => cancelAnimationFrame(animationFrame);
+  }, [durationMs, target]);
+
+  return value;
+}
 
 function getInitials(name: string): string {
   return name
@@ -127,6 +170,72 @@ function buildEventItems(
   }));
 }
 
+function KpiCard({ index, kpi }: { index: number; kpi: DashboardKpi }) {
+  const { t } = useTranslation();
+  const numericValue = Number(kpi.value);
+  const animatedValue = useAnimatedNumber(
+    Number.isNaN(numericValue) ? 0 : numericValue,
+    750,
+  );
+  const displayValue = Number.isNaN(numericValue)
+    ? kpi.value
+    : Math.round(animatedValue).toString();
+
+  return (
+    <Card
+      variant="outlined"
+      padding="md"
+      className="dashboard-kpi-card dashboard-stagger-item"
+      style={{ animationDelay: `${index * 70}ms` }}
+    >
+      <Stack direction="column" gap="md">
+        <Stack direction="row" align="center" justify="space-between">
+          <Typography color="on-surface-variant" as="span">
+            {t(kpi.labelKey)}
+          </Typography>
+          <span className="dashboard-kpi-icon">
+            <Icon name={kpi.icon} color={kpi.changeColor} featured />
+          </span>
+        </Stack>
+        <Typography variant="headline" size="lg" as="p">
+          {displayValue}
+        </Typography>
+        <Tag
+          label={kpi.change}
+          color={kpi.changeColor}
+          variant="solid"
+          tone="light"
+          size="sm"
+        />
+      </Stack>
+    </Card>
+  );
+}
+
+function AnimatedOnboardingProgress({
+  item,
+}: {
+  item: DashboardOnboardingStep;
+}) {
+  const { t } = useTranslation();
+  const value = useAnimatedNumber(item.value, 900);
+  const roundedValue = Math.round(value);
+
+  return (
+    <Stack key={item.labelKey} direction="column" gap="xs">
+      <Stack direction="row" justify="space-between" align="center">
+        <Typography as="span">{t(item.labelKey)}</Typography>
+        <Typography color="on-surface-variant" as="span">
+          {t('dashboard.progress.value', {
+            value: roundedValue,
+          })}
+        </Typography>
+      </Stack>
+      <ProgressIndicator value={roundedValue} />
+    </Stack>
+  );
+}
+
 export default function Home() {
   const { t } = useTranslation();
   const { dashboard, isLoading, error, refetch } = useDashboard();
@@ -154,14 +263,19 @@ export default function Home() {
             </Typography>
           </Stack>
           <Stack direction="row" gap="sm" justify="flex-end">
-            <Button
-              variant="outlined"
-              icon="refresh"
-              onClick={refetch}
-              disabled={isLoading}
+            <span
+              className="dashboard-refresh-action"
+              data-loading={isLoading ? 'true' : 'false'}
             >
-              {t('dashboard.actions.refresh')}
-            </Button>
+              <Button
+                variant="outlined"
+                icon="refresh"
+                onClick={refetch}
+                disabled={isLoading}
+              >
+                {t('dashboard.actions.refresh')}
+              </Button>
+            </span>
             <Button<typeof Link>
               variant="filled"
               icon="users"
@@ -196,31 +310,8 @@ export default function Home() {
               gap="md"
               width="100%"
             >
-              {dashboard.kpis.map((kpi) => (
-                <Card key={kpi.id} variant="outlined" padding="md">
-                  <Stack direction="column" gap="md">
-                    <Stack
-                      direction="row"
-                      align="center"
-                      justify="space-between"
-                    >
-                      <Typography color="on-surface-variant" as="span">
-                        {t(kpi.labelKey)}
-                      </Typography>
-                      <Icon name={kpi.icon} color={kpi.changeColor} featured />
-                    </Stack>
-                    <Typography variant="headline" size="lg" as="p">
-                      {kpi.value}
-                    </Typography>
-                    <Tag
-                      label={kpi.change}
-                      color={kpi.changeColor}
-                      variant="solid"
-                      tone="light"
-                      size="sm"
-                    />
-                  </Stack>
-                </Card>
+              {dashboard.kpis.map((kpi, index) => (
+                <KpiCard key={kpi.id} index={index} kpi={kpi} />
               ))}
             </Grid>
 
@@ -277,21 +368,10 @@ export default function Home() {
                 >
                   <Stack direction="column" gap="md">
                     {dashboard.onboardingProgress.map((item) => (
-                      <Stack key={item.labelKey} direction="column" gap="xs">
-                        <Stack
-                          direction="row"
-                          justify="space-between"
-                          align="center"
-                        >
-                          <Typography as="span">{t(item.labelKey)}</Typography>
-                          <Typography color="on-surface-variant" as="span">
-                            {t('dashboard.progress.value', {
-                              value: item.value,
-                            })}
-                          </Typography>
-                        </Stack>
-                        <ProgressIndicator value={item.value} />
-                      </Stack>
+                      <AnimatedOnboardingProgress
+                        key={item.labelKey}
+                        item={item}
+                      />
                     ))}
                   </Stack>
                 </Card>
