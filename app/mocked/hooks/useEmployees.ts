@@ -1,4 +1,6 @@
-import type { Employee, EmployeeFilters } from "../types/employee";
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { fetchEmployeeFilters, fetchEmployees } from '../api/employees';
+import type { Employee, EmployeeFilters } from '../types/employee';
 
 type UseEmployeesResult = {
   employees: Employee[];
@@ -9,13 +11,57 @@ type UseEmployeesResult = {
 };
 
 export function useEmployees(): UseEmployeesResult {
-  // TODO: Implement the useEmployees hook
+  const [employees, setEmployees] = useState<Employee[]>([]);
+  const [filters, setFilters] = useState<EmployeeFilters | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+  const requestIdRef = useRef(0);
+
+  const refetch = useCallback(() => {
+    const requestId = requestIdRef.current + 1;
+    requestIdRef.current = requestId;
+
+    setIsLoading(true);
+    setError(null);
+
+    Promise.all([fetchEmployees(), fetchEmployeeFilters()])
+      .then(([employeesData, filtersData]) => {
+        if (requestIdRef.current !== requestId) {
+          return;
+        }
+
+        setEmployees(employeesData);
+        setFilters(filtersData);
+      })
+      .catch((caughtError: unknown) => {
+        if (requestIdRef.current !== requestId) {
+          return;
+        }
+
+        setError(
+          caughtError instanceof Error
+            ? caughtError
+            : new Error('Failed to fetch employees data'),
+        );
+      })
+      .finally(() => {
+        if (requestIdRef.current !== requestId) {
+          return;
+        }
+
+        setIsLoading(false);
+      });
+  }, []);
+
+  useEffect(() => {
+    refetch();
+  }, [refetch]);
 
   return {
-    employees: [],
-    filters: null,
-    isLoading: false,
-    error: null,
-    refetch: () => {},
+    employees,
+    filters,
+    isLoading,
+    error,
+    refetch,
   };
 }

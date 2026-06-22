@@ -1,4 +1,6 @@
-import type { DashboardData } from "../types/dashboard";
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { fetchDashboard } from '../api/dashboard';
+import type { DashboardData } from '../types/dashboard';
 
 type UseDashboardResult = {
   dashboard: DashboardData | null;
@@ -8,12 +10,54 @@ type UseDashboardResult = {
 };
 
 export function useDashboard(): UseDashboardResult {
-  // TODO: Implement the useDashboard hook
+  const [dashboard, setDashboard] = useState<DashboardData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+  const requestIdRef = useRef(0);
+
+  const refetch = useCallback(() => {
+    const requestId = requestIdRef.current + 1;
+    requestIdRef.current = requestId;
+
+    setIsLoading(true);
+    setError(null);
+
+    fetchDashboard()
+      .then((data) => {
+        if (requestIdRef.current !== requestId) {
+          return;
+        }
+
+        setDashboard(data);
+      })
+      .catch((caughtError: unknown) => {
+        if (requestIdRef.current !== requestId) {
+          return;
+        }
+
+        setError(
+          caughtError instanceof Error
+            ? caughtError
+            : new Error('Failed to fetch dashboard data'),
+        );
+      })
+      .finally(() => {
+        if (requestIdRef.current !== requestId) {
+          return;
+        }
+
+        setIsLoading(false);
+      });
+  }, []);
+
+  useEffect(() => {
+    refetch();
+  }, [refetch]);
 
   return {
-    dashboard: null,
-    isLoading: false,
-    error: null,
-    refetch: () => {},
+    dashboard,
+    isLoading,
+    error,
+    refetch,
   };
 }
