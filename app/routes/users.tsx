@@ -1,5 +1,5 @@
-import { memo, useCallback, useDeferredValue, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { memo, useCallback, useDeferredValue, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Avatar,
   Button,
@@ -16,34 +16,34 @@ import {
   type PopUpMenuItem,
   type TableColumnProps,
   type TableRowData,
-} from '@zvoove/unity-ui';
+} from "@zvoove/unity-ui";
 
-import { useEmployees } from '../mocked/hooks/useEmployees';
+import { useEmployees } from "../mocked/hooks/useEmployees";
 import type {
   Employee,
   EmployeeFilterOption,
   EmployeeFilters,
   EmployeeStatus,
-} from '../mocked/types/employee';
+} from "../mocked/types/employee";
 
 const columns = [
-  { id: 'name', label: 'employees.table.name', minWidth: '220px' },
-  { id: 'vorname', label: 'employees.table.vorname', minWidth: '140px' },
-  { id: 'beruf', label: 'employees.table.beruf', minWidth: '180px' },
-  { id: 'telefon', label: 'employees.table.telefon', minWidth: '160px' },
-  { id: 'plz', label: 'employees.table.plz', minWidth: '120px' },
-  { id: 'eintritt', label: 'employees.table.eintritt', minWidth: '140px' },
+  { id: "name", label: "employees.table.name", minWidth: "220px" },
+  { id: "vorname", label: "employees.table.vorname", minWidth: "140px" },
+  { id: "beruf", label: "employees.table.beruf", minWidth: "180px" },
+  { id: "telefon", label: "employees.table.telefon", minWidth: "160px" },
+  { id: "plz", label: "employees.table.plz", minWidth: "120px" },
+  { id: "eintritt", label: "employees.table.eintritt", minWidth: "140px" },
   {
-    id: 'ueberlassen',
-    label: 'employees.table.ueberlassen',
-    minWidth: '150px',
+    id: "ueberlassen",
+    label: "employees.table.ueberlassen",
+    minWidth: "150px",
   },
-  { id: 'status', label: 'employees.table.status', minWidth: '160px' },
+  { id: "status", label: "employees.table.status", minWidth: "160px" },
   {
-    id: 'actions',
-    label: 'employees.table.actions',
-    align: 'right',
-    width: '88px',
+    id: "actions",
+    label: "employees.table.actions",
+    align: "right",
+    width: "88px",
   },
 ] as const satisfies readonly TableColumnProps[];
 
@@ -53,39 +53,39 @@ type FilterKey = keyof EmployeeFilters;
 type ActiveFilters = Partial<Record<FilterKey, string>>;
 
 const filterKeys = [
-  'beruf',
-  'plz',
-  'eintritt',
-  'ueberlassen',
-  'status',
+  "beruf",
+  "plz",
+  "eintritt",
+  "ueberlassen",
+  "status",
 ] as const satisfies readonly FilterKey[];
 
 const statusConfig: Record<
   EmployeeStatus,
   {
-    color: 'green' | 'yellow' | 'pink' | 'steel-blue' | 'neutral';
+    color: "green" | "yellow" | "pink" | "steel-blue" | "neutral";
     labelKey: string;
   }
 > = {
   mitarbeiter: {
-    color: 'green',
-    labelKey: 'employees.status.mitarbeiter',
+    color: "green",
+    labelKey: "employees.status.mitarbeiter",
   },
   bewerber: {
-    color: 'steel-blue',
-    labelKey: 'employees.status.bewerber',
+    color: "steel-blue",
+    labelKey: "employees.status.bewerber",
   },
   ehemalig: {
-    color: 'neutral',
-    labelKey: 'employees.status.ehemalig',
+    color: "neutral",
+    labelKey: "employees.status.ehemalig",
   },
   zukuenftig: {
-    color: 'yellow',
-    labelKey: 'employees.status.zukuenftig',
+    color: "yellow",
+    labelKey: "employees.status.zukuenftig",
   },
-  'bewerber-cockpit': {
-    color: 'pink',
-    labelKey: 'employees.status.bewerberCockpit',
+  "bewerber-cockpit": {
+    color: "pink",
+    labelKey: "employees.status.bewerberCockpit",
   },
 };
 
@@ -155,18 +155,18 @@ const PageHeader = memo(function PageHeader({
 
   return (
     <Stack
-      direction={{ minimum: 'column', tablet: 'row' }}
+      direction={{ minimum: "column", tablet: "row" }}
       gap="md"
-      align={{ minimum: 'stretch', tablet: 'center' }}
+      align={{ minimum: "stretch", tablet: "center" }}
       justify="space-between"
       width="100%"
     >
       <Stack direction="column" gap="xs" width="100%">
         <Typography variant="headline" size="lg" as="h1">
-          {t('employees.header.title')}
+          {t("employees.header.title")}
         </Typography>
         <Typography color="on-surface-variant" as="p">
-          {t('employees.header.description')}
+          {t("employees.header.description")}
         </Typography>
       </Stack>
       <Button
@@ -175,7 +175,7 @@ const PageHeader = memo(function PageHeader({
         onClick={onRefetch}
         disabled={isLoading}
       >
-        {t('employees.actions.refresh')}
+        {t("employees.actions.refresh")}
       </Button>
     </Stack>
   );
@@ -192,8 +192,8 @@ const EmployeeSearchField = memo(function EmployeeSearchField({
 
   return (
     <TextField
-      label={t('employees.filters.search')}
-      placeholder={t('employees.filters.searchPlaceholder')}
+      label={t("employees.filters.search")}
+      placeholder={t("employees.filters.searchPlaceholder")}
       value={search}
       onChange={(event) => onSearchChange(event.target.value)}
       clearable
@@ -227,7 +227,7 @@ const EmployeeFilterChips = memo(function EmployeeFilterChips({
           filters?.[filterKey].map((option) => ({
             id: option.value,
             label:
-              filterKey === 'status'
+              filterKey === "status"
                 ? t(
                     statusConfig[option.value as EmployeeStatus]?.labelKey ??
                       option.label,
@@ -248,10 +248,10 @@ const EmployeeFilterChips = memo(function EmployeeFilterChips({
               type="filter"
               label={
                 selectedLabel
-                  ? t('employees.filters.activeLabel', {
+                  ? t("employees.filters.activeLabel", {
                       filter: t(`employees.filters.${filterKey}`),
                       value:
-                        filterKey === 'status'
+                        filterKey === "status"
                           ? t(
                               statusConfig[selectedValue as EmployeeStatus]
                                 ?.labelKey ?? selectedLabel,
@@ -260,7 +260,7 @@ const EmployeeFilterChips = memo(function EmployeeFilterChips({
                     })
                   : t(`employees.filters.${filterKey}`)
               }
-              variant={selectedValue ? 'primary' : 'secondary'}
+              variant={selectedValue ? "primary" : "secondary"}
               disabled={!filters}
             />
           </PopUpMenu>
@@ -278,7 +278,7 @@ function EmployeeTableSection({
   filters: EmployeeFilters | null;
 }) {
   const { t } = useTranslation();
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
   const deferredSearch = useDeferredValue(search);
   const [activeFilters, setActiveFilters] = useState<ActiveFilters>({});
 
@@ -304,21 +304,21 @@ function EmployeeTableSection({
   const rowActions = useMemo<PopUpMenuItem[]>(
     () => [
       {
-        id: 'view',
-        label: t('employees.actions.view'),
-        icon: 'article',
+        id: "view",
+        label: t("employees.actions.view"),
+        icon: "article",
         onClick: () => {},
       },
       {
-        id: 'edit',
-        label: t('employees.actions.edit'),
-        icon: 'edit',
+        id: "edit",
+        label: t("employees.actions.edit"),
+        icon: "edit",
         onClick: () => {},
       },
       {
-        id: 'delete',
-        label: t('employees.actions.delete'),
-        icon: 'delete',
+        id: "delete",
+        label: t("employees.actions.delete"),
+        icon: "delete",
         onClick: () => {},
       },
     ],
@@ -349,9 +349,9 @@ function EmployeeTableSection({
   const filterControls = useMemo(
     () => (
       <Stack
-        direction={{ minimum: 'column', tablet: 'row' }}
+        direction={{ minimum: "column", tablet: "row" }}
         gap="sm"
-        align={{ minimum: 'stretch', tablet: 'center' }}
+        align={{ minimum: "stretch", tablet: "center" }}
         wrap="wrap"
         width="100%"
       >
@@ -376,7 +376,7 @@ function EmployeeTableSection({
           name: (
             <Stack direction="row" gap="sm" align="center">
               <Avatar
-                type={employee.image ? 'image' : 'initials'}
+                type={employee.image ? "image" : "initials"}
                 image={employee.image}
                 name={employeeName}
                 size="md"
@@ -404,7 +404,7 @@ function EmployeeTableSection({
             <Stack direction="row" justify="flex-end">
               <PopUpMenu items={rowActions} placement="bottom-right">
                 <Button icon="option" hideLabel variant="text">
-                  {t('employees.actions.openMenu', { name: employeeName })}
+                  {t("employees.actions.openMenu", { name: employeeName })}
                 </Button>
               </PopUpMenu>
             </Stack>
@@ -416,13 +416,13 @@ function EmployeeTableSection({
 
   return (
     <Table
-      title={t('employees.table.title', {
+      title={t("employees.table.title", {
         count: filteredEmployees.length,
       })}
       columns={tableColumns}
       data={tableRows}
       filters={filterControls}
-      emptyState={t('employees.empty')}
+      emptyState={t("employees.empty")}
       headerBackgroundColor
     />
   );
@@ -437,13 +437,13 @@ export default function Users() {
       <Stack
         direction="column"
         gap="lg"
-        padding={{ minimum: 'sm', tablet: 'lg' }}
+        padding={{ minimum: "sm", tablet: "lg" }}
       >
         <PageHeader isLoading={isLoading} onRefetch={refetch} />
 
         {error ? (
           <InfoBox
-            message={t('employees.error')}
+            message={t("employees.error")}
             variant="error"
             icon="warning"
           />

@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback } from "react";
 
 type AsyncState<T> = {
   data: T | null;
@@ -36,7 +36,7 @@ export function useAsync<T>(
       const error =
         caughtError instanceof Error
           ? caughtError
-          : new Error('An unexpected error occurred');
+          : new Error("An unexpected error occurred");
 
       setState((prev) => ({ ...prev, isLoading: false, error }));
     }

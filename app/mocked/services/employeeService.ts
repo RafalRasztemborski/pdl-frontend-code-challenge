@@ -1,5 +1,5 @@
-import { fetchEmployeeFilters, fetchEmployees } from '../api/employees';
-import type { Employee, EmployeeFilters } from '../types/employee';
+import { fetchEmployeeFilters, fetchEmployees } from "../api/employees";
+import type { Employee, EmployeeFilters } from "../types/employee";
 
 export type EmployeeDataComposite = {
   employees: Employee[];

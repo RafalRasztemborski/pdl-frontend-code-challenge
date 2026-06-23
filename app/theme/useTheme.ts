@@ -1,6 +1,10 @@
 import { useSyncExternalStore } from "react";
 
-import { THEME_STORAGE_KEY, THEMES, type Theme } from "../constants/preferences";
+import {
+  THEME_STORAGE_KEY,
+  THEMES,
+  type Theme,
+} from "../constants/preferences";
 
 function subscribeToTheme(callback: () => void) {
   if (typeof document === "undefined") {
@@ -44,7 +48,11 @@ export function applyPersistedTheme() {
 }
 
 export function useTheme() {
-  const theme = useSyncExternalStore(subscribeToTheme, getTheme, () => THEMES.LIGHT);
+  const theme = useSyncExternalStore(
+    subscribeToTheme,
+    getTheme,
+    () => THEMES.LIGHT,
+  );
 
   const toggleTheme = () => {
     const next = theme === THEMES.DARK ? THEMES.LIGHT : THEMES.DARK;

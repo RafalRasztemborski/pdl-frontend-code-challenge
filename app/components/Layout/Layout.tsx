@@ -1,5 +1,5 @@
-import { useTranslation } from 'react-i18next';
-import { Link, useLocation } from 'react-router';
+import { useTranslation } from "react-i18next";
+import { Link, useLocation } from "react-router";
 import {
   Breadcrumbs,
   Card,
@@ -11,46 +11,46 @@ import {
   ZvooveBrand,
   type BreadcrumbsItem,
   type ListMenuItem,
-} from '@zvoove/unity-ui';
+} from "@zvoove/unity-ui";
 
-import { useSharedUserArea } from './useSharedUserArea';
-import { useSidebarOpen } from './useSidebarOpen';
+import { useSharedUserArea } from "./useSharedUserArea";
+import { useSidebarOpen } from "./useSidebarOpen";
 
 function getActiveItemId(
   pathname: string,
   menuItems: ListMenuItem<typeof Link>[],
 ): string {
-  if (pathname === '/' || pathname === '') return 'home';
-  if (pathname.startsWith('/users')) return 'users';
+  if (pathname === "/" || pathname === "") return "home";
+  if (pathname.startsWith("/users")) return "users";
 
-  const firstSlug = pathname.split('/')[1] || '';
-  return menuItems.find((item) => item.id === firstSlug)?.id ?? 'home';
+  const firstSlug = pathname.split("/")[1] || "";
+  return menuItems.find((item) => item.id === firstSlug)?.id ?? "home";
 }
 
 function getBreadcrumbItems(
   pathname: string,
   t: (key: string) => string,
 ): BreadcrumbsItem<typeof Link>[] {
-  if (pathname === '/' || pathname === '') {
-    return [{ label: t('nav.home'), to: '/' }];
+  if (pathname === "/" || pathname === "") {
+    return [{ label: t("nav.home"), to: "/" }];
   }
 
-  if (pathname.startsWith('/users')) {
+  if (pathname.startsWith("/users")) {
     return [
-      { label: t('nav.home'), to: '/' },
-      { label: t('nav.users'), to: '/users' },
+      { label: t("nav.home"), to: "/" },
+      { label: t("nav.users"), to: "/users" },
     ];
   }
 
-  return [{ label: t('nav.home'), to: '/' }];
+  return [{ label: t("nav.home"), to: "/" }];
 }
 
 function formatHeaderDate(date: Date, language: string): string {
   return new Intl.DateTimeFormat(language, {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
   }).format(date);
 }
 
@@ -61,12 +61,12 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   const { pathname } = useLocation();
 
   const menuItems = [
-    { label: t('nav.home'), id: 'home', icon: 'home', to: '/' },
+    { label: t("nav.home"), id: "home", icon: "home", to: "/" },
     {
-      label: t('nav.users'),
-      id: 'users',
-      icon: 'users',
-      to: '/users',
+      label: t("nav.users"),
+      id: "users",
+      icon: "users",
+      to: "/users",
     },
   ] as ListMenuItem<typeof Link>[];
 
@@ -81,9 +81,9 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         </div>
         <div className="flex items-center gap-xs h-full">
           <UserArea
-            name={sharedUserArea?.name ?? ''}
+            name={sharedUserArea?.name ?? ""}
             subtitle={sharedUserArea?.subtitle}
-            avatar={sharedUserArea?.avatar ?? { image: '' }}
+            avatar={sharedUserArea?.avatar ?? { image: "" }}
             menuItems={sharedUserArea?.menuItems}
             infoPosition="left"
             menuPlacement="bottom-right"
@@ -92,13 +92,13 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         </div>
       </div>
       <Grid
-        columns={{ minimum: 1, tablet: 'auto 1fr' }}
+        columns={{ minimum: 1, tablet: "auto 1fr" }}
         gap="sm"
         padding={{
-          minimum: { top: 'none', bottom: 'xs', left: 'xs', right: 'xs' },
-          tablet: 'sm',
+          minimum: { top: "none", bottom: "xs", left: "xs", right: "xs" },
+          tablet: "sm",
         }}
-        height={{ minimum: 'calc(100dvh - 48px)', tablet: '100vh' }}
+        height={{ minimum: "calc(100dvh - 48px)", tablet: "100vh" }}
       >
         <SideNavigation
           linkComponent={Link}
@@ -124,12 +124,12 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                 align="center"
                 justify="space-between"
                 padding={{
-                  minimum: 'sm',
+                  minimum: "sm",
                   tablet: {
-                    top: 'sm',
-                    bottom: 'sm',
-                    left: isOpen ? 'sm' : 'xl4',
-                    right: 'sm',
+                    top: "sm",
+                    bottom: "sm",
+                    left: isOpen ? "sm" : "xl4",
+                    right: "sm",
                   },
                 }}
               >

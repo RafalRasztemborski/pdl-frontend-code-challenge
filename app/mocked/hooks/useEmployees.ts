@@ -1,10 +1,10 @@
-import { useEffect } from 'react';
+import { useEffect } from "react";
 import {
   EmployeeService,
   type EmployeeDataComposite,
-} from '../services/employeeService';
-import { useAsync } from './useAsync'; // import naszego helpera
-import type { Employee, EmployeeFilters } from '../types/employee';
+} from "../services/employeeService";
+import { useAsync } from "./useAsync"; // import naszego helpera
+import type { Employee, EmployeeFilters } from "../types/employee";
 
 type UseEmployeesResult = {
   employees: Employee[];

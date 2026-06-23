@@ -57,13 +57,13 @@
   transform: rotate(180deg);
 }
 
-.dashboard-refresh-action[data-loading='true'] svg {
+.dashboard-refresh-action[data-loading="true"] svg {
   animation: dashboard-refresh-spin 700ms linear infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .dashboard-stagger-item,
-  .dashboard-refresh-action[data-loading='true'] svg {
+  .dashboard-refresh-action[data-loading="true"] svg {
     animation: none;
   }
 

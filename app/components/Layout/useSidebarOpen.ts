@@ -22,9 +22,7 @@ function getInitialSidebarOpen(): boolean {
     return false;
   }
 
-  return isMobileViewport(window.innerWidth)
-    ? false
-    : getStoredSidebarOpen();
+  return isMobileViewport(window.innerWidth) ? false : getStoredSidebarOpen();
 }
 
 export function useSidebarOpen() {

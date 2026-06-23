@@ -1,7 +1,7 @@
-import { useEffect } from 'react';
-import { fetchDashboard } from '../api/dashboard';
-import { useAsync } from './useAsync'; // import naszego uniwersalnego helpera
-import type { DashboardData } from '../types/dashboard';
+import { useEffect } from "react";
+import { fetchDashboard } from "../api/dashboard";
+import { useAsync } from "./useAsync"; // import naszego uniwersalnego helpera
+import type { DashboardData } from "../types/dashboard";
 
 type UseDashboardResult = {
   dashboard: DashboardData | null;
