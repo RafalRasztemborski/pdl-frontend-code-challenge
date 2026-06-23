@@ -7,4 +7,15 @@ export default defineConfig({
   resolve: {
     tsconfigPaths: true,
   },
+  build: {
+    rollupOptions: {
+      onwarn(warning, warn) {
+        // Ignoruj błędy związane ze źle umieszczonymi adnotacjami PURE
+        if (warning.code === "INVALID_ANNOTATION") return;
+
+        // Dla reszty ostrzeżeń użyj domyślnego zachowania
+        warn(warning);
+      },
+    },
+  },
 });
