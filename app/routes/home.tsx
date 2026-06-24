@@ -182,33 +182,34 @@ function KpiCard({ index, kpi }: { index: number; kpi: DashboardKpi }) {
     : Math.round(animatedValue).toString();
 
   return (
-    <Card
-      variant="outlined"
-      padding="md"
-      className="dashboard-kpi-card dashboard-stagger-item"
-      style={{ animationDelay: `${index * 70}ms` }}
-    >
-      <Stack direction="column" gap="md">
-        <Stack direction="row" align="center" justify="space-between">
-          <Typography color="on-surface-variant" as="span">
-            {t(kpi.labelKey)}
+    <div className="dashboard-kpi-card dashboard-stagger-item">
+      <Card
+        variant="outlined"
+        padding="md"
+        style={{ animationDelay: `${index * 70}ms` }}
+      >
+        <Stack direction="column" gap="md">
+          <Stack direction="row" align="center" justify="space-between">
+            <Typography color="on-surface-variant" as="span">
+              {t(kpi.labelKey)}
+            </Typography>
+            <span className="dashboard-kpi-icon">
+              <Icon name={kpi.icon} color={kpi.changeColor} featured />
+            </span>
+          </Stack>
+          <Typography variant="headline" size="lg" as="p">
+            {displayValue}
           </Typography>
-          <span className="dashboard-kpi-icon">
-            <Icon name={kpi.icon} color={kpi.changeColor} featured />
-          </span>
+          <Tag
+            label={kpi.change}
+            color={kpi.changeColor}
+            variant="solid"
+            tone="light"
+            size="sm"
+          />
         </Stack>
-        <Typography variant="headline" size="lg" as="p">
-          {displayValue}
-        </Typography>
-        <Tag
-          label={kpi.change}
-          color={kpi.changeColor}
-          variant="solid"
-          tone="light"
-          size="sm"
-        />
-      </Stack>
-    </Card>
+      </Card>
+    </div>
   );
 }
 
